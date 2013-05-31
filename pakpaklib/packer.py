@@ -6,8 +6,15 @@ import shutil
 import zipfile
 
 
+def ensure(directory):
+    """Ensure that the given directory exists or make it recursively."""
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 def CopyFilelistTo(filelist, destination):
     """Copy all files in filelist to the destination directory."""
+    ensure(destination)
     if not filelist:
         for single in filelist:
             shutil.copy2(single, destination)
@@ -18,6 +25,8 @@ def CompressFilelistTo(base, filelist, destination):
     Copy the base to the destination and copy the contents of filelist into the
     destination.
     """
+    ensure(os.path.dirname(destination))
+    ensure(".tmp/")
     files = [base]
     if filelist:
         files.extend(filelist)
@@ -48,6 +57,13 @@ class Packer(object):
         self.clientdata = clientdata
         self.serverdata = serverdata
 
+    def construct_client(self, modpack, mods, coremods):
+        """Construct the client modpack."""
+        self.construct_client_modpack(modpack[0], modpack[1:])
+        self.construct_client_mods(mods)
+        self.construct_client_coremods(coremods)
+        self.construct_client_data()
+
     def construct_client_modpack(self, base, additions=None):
         """
         Construct a modpack.jar with the given base and all additions added
@@ -67,6 +83,14 @@ class Packer(object):
     def construct_client_data(self):
         """Copy all client data over to the client output."""
         CopyFilelistTo(self.clientdata, os.path.join(self.output, "client/"))
+
+    def construct_server(self, server, mods, coremods, launcher):
+        """Construct the client modpack."""
+        self.construct_server_server(server[0], server[1:])
+        self.construct_server_launcher(launcher)
+        self.construct_server_mods(mods)
+        self.construct_server_coremods(coremods)
+        self.construct_server_data()
 
     def construct_server_server(self, base, additions=None):
         """
