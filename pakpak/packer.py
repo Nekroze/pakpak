@@ -31,10 +31,10 @@ def compressfilelist(base, filelist, destination):
     if filelist:
         files.extend(filelist)
     for single in files:
-        with zipfile.open(single, "r") as basezip:
+        with zipfile.ZipFile(single, "r") as basezip:
             basezip.extractall(".tmp/")
 
-    with zipfile.open(destination, "w") as destzip:
+    with zipfile.ZipFile(destination, "w") as destzip:
         for root, _, files in os.walk(".tmp/"):
             for single in files:
                 destzip.write(os.path.join(root, file))
