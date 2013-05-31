@@ -37,6 +37,8 @@ def compressfilelist(base, filelist, destination):
     with zipfile.ZipFile(destination, "w") as destzip:
         for root, _, files in os.walk(".tmp/"):
             for single in files:
+                if os.path.isdir(single):
+                    continue
                 path = os.path.join(root, single)
                 arcpath = path.split(os.sep)[1:]
                 arcpath = os.path.join(*arcpath)
