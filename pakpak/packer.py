@@ -37,7 +37,10 @@ def compressfilelist(base, filelist, destination):
     with zipfile.ZipFile(destination, "w") as destzip:
         for root, _, files in os.walk(".tmp/"):
             for single in files:
-                destzip.write(os.path.join(root, file))
+                path = os.path.join(root, single)
+                arcpath = path.split(os.sep)[1:]
+                arcpath = os.path.join(*arcpath)
+                destzip.write(path, arcpath)
     shutil.rmtree(".tmp/")
 
 
@@ -102,9 +105,9 @@ class Packer(object):
 
     def construct_server_launcher(self, command):
         """Construct the server launcher scripts."""
-        with open(os.path.join(self.output, "server/start.bat")) as bat:
+        with open(os.path.join(self.output, "server/start.bat"), 'w') as bat:
             bat.write(command)
-        with open(os.path.join(self.output, "server/start.sh")) as bash:
+        with open(os.path.join(self.output, "server/start.sh"), 'w') as bash:
             bash.write(command)
 
     def construct_server_mods(self, modlist=None):
