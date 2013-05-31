@@ -5,6 +5,7 @@ __author__ = 'Taylor "Nekroze" Lawson'
 __email__ = 'nekroze@eturnilnetwork.com'
 from .packer import Packer
 import os
+from copy import copy
 
 
 class InplaceList(object):
@@ -65,11 +66,11 @@ class Modpack(object):
         self.server_data = InplaceList()
         self.server += baseserver
         self.modpack += basemodpack
-        self.launcher = "java -server -Xmx1024M -jar server.jar nogui"
+        self.launcher = "java -server -Xmx2G -jar server.jar nogui"
 
     def check_files(self):
         """Check if all specified files exist."""
-        files = self.modpack.list
+        files = copy(self.modpack.list)
         files.extend(self.server.list)
         files.extend(self.universal_mods.list)
         files.extend(self.universal_coremods.list)
@@ -97,15 +98,20 @@ class Modpack(object):
         clientmods.extend(self.universal_mods.list)
         clientcoremods = self.client_coremods.list
         clientcoremods.extend(self.universal_coremods.list)
+        clientdata = self.client_data.list
+        clientdata.extend(self.universal_data.list)
         servermods = self.server_mods.list
         servermods.extend(self.universal_mods.list)
         servercoremods = self.server_coremods.list
         servercoremods.extend(self.universal_coremods.list)
+        serverdata = self.server_data.list
+        serverdata.extend(self.universal_data.list)
 
         if client:
-            pack.construct_client(self.modpack.list, clientmods,
-                                  clientcoremods)
+            pack.construct_client(copy(self.modpack.list), copy(clientmods),
+                                  copy(clientcoremods), copy(clientdata))
 
         if server:
-            pack.construct_server(self.server.list, servermods,
-                                  servercoremods, self.launcher)
+            pack.construct_server(copy(self.server.list), copy(servermods),
+                                  copy(servercoremods), copy(serverdata),
+                                  self.launcher)

@@ -17,7 +17,12 @@ def copyfilelist(filelist, destination):
     ensure(destination)
     if filelist:
         for single in filelist:
-            shutil.copy2(single, destination)
+            if os.path.isdir(single):
+                shutil.copytree(single,
+                                os.path.join(destination,
+                                             single.split(os.sep)[-1]))
+            else:
+                shutil.copy2(single, destination)
 
 
 def compressfilelist(base, filelist, destination):
@@ -32,13 +37,14 @@ def compressfilelist(base, filelist, destination):
         files.extend(filelist)
     for single in files:
         with zipfile.ZipFile(single, "r") as basezip:
+            for member in basezip.namelist():
+                if member.endswith('/'):
+                    os.makedirs(member)
             basezip.extractall(".tmp/")
 
     with zipfile.ZipFile(destination, "w") as destzip:
         for root, _, files in os.walk(".tmp/"):
             for single in files:
-                if os.path.isdir(single):
-                    continue
                 path = os.path.join(root, single)
                 arcpath = path.split(os.sep)[1:]
                 arcpath = os.path.join(*arcpath)
@@ -62,7 +68,7 @@ class Packer(object):
         self.clientdata = clientdata
         self.serverdata = serverdata
 
-    def construct_client(self, modpack, mods, coremods):
+    def construct_client(self, modpack, mods, coremods, data):
         """Construct the client modpack."""
         path = os.path.join(self.output, "client")
         if os.path.exists(path):
@@ -70,7 +76,7 @@ class Packer(object):
         self.construct_client_modpack(modpack[0], modpack[1:])
         self.construct_client_mods(mods)
         self.construct_client_coremods(coremods)
-        self.construct_client_data()
+        self.construct_client_data(data)
 
     def construct_client_modpack(self, base, additions=None):
         """
@@ -88,11 +94,11 @@ class Packer(object):
         """Construct the coremods for the client modspack."""
         copyfilelist(modlist, os.path.join(self.output, "client/coremods"))
 
-    def construct_client_data(self):
+    def construct_client_data(self, data):
         """Copy all client data over to the client output."""
-        copyfilelist(self.clientdata, os.path.join(self.output, "client/"))
+        copyfilelist(data, os.path.join(self.output, "client/"))
 
-    def construct_server(self, server, mods, coremods, launcher):
+    def construct_server(self, server, mods, coremods, data, launcher):
         """Construct the client modpack."""
         path = os.path.join(self.output, "server")
         if os.path.exists(path):
@@ -101,7 +107,7 @@ class Packer(object):
         self.construct_server_launcher(launcher)
         self.construct_server_mods(mods)
         self.construct_server_coremods(coremods)
-        self.construct_server_data()
+        self.construct_server_data(data)
 
     def construct_server_server(self, base, additions=None):
         """
@@ -120,12 +126,12 @@ class Packer(object):
 
     def construct_server_mods(self, modlist=None):
         """Construct the mods for the server modpack."""
-        copyfilelist(modlist, os.path.join(self.output, "client/mods"))
+        copyfilelist(modlist, os.path.join(self.output, "server/mods"))
 
     def construct_server_coremods(self, modlist=None):
         """Construct the coremods for the server modspack."""
-        copyfilelist(modlist, os.path.join(self.output, "client/mods"))
+        copyfilelist(modlist, os.path.join(self.output, "server/coremods"))
 
-    def construct_server_data(self):
+    def construct_server_data(self, data):
         """Copy all server data over to the server output."""
-        copyfilelist(self.clientdata, os.path.join(self.output, "server/"))
+        copyfilelist(data, os.path.join(self.output, "server/"))
