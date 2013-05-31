@@ -68,19 +68,20 @@ class Modpack(object):
     def construct(self, client=True, server=True):
         """Construct the modpack using a packer."""
         pack = Packer(self.mods, self.output,
-                      self.client_data, self.server_data)
+                      self.client_data.list, self.server_data.list)
         clientmods = self.client_mods.list
-        clientmods += self.universal_mods.list
+        clientmods.extend(self.universal_mods.list)
         clientcoremods = self.client_coremods.list
-        clientcoremods += self.universal_coremods.list
+        clientcoremods.extend(self.universal_coremods.list)
         servermods = self.server_mods.list
-        servermods += self.universal_mods.list
+        servermods.extend(self.universal_mods.list)
         servercoremods = self.server_coremods.list
-        servercoremods += self.universal_coremods.list
+        servercoremods.extend(self.universal_coremods.list)
 
         if client:
-            pack.construct_client(self.modpack, clientmods, clientcoremods)
+            pack.construct_client(self.modpack.list, clientmods,
+                                  clientcoremods)
 
         if server:
-            pack.construct_server(self.modpack, servermods, servercoremods,
-                                  self.launcher)
+            pack.construct_server(self.server.list, servermods,
+                                  servercoremods, self.launcher)

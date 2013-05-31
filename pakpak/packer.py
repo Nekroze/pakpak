@@ -15,7 +15,7 @@ def ensure(directory):
 def copyfilelist(filelist, destination):
     """Copy all files in filelist to the destination directory."""
     ensure(destination)
-    if not filelist:
+    if filelist:
         for single in filelist:
             shutil.copy2(single, destination)
 
@@ -63,6 +63,7 @@ class Packer(object):
     def construct_client(self, modpack, mods, coremods):
         """Construct the client modpack."""
         self.construct_client_modpack(modpack[0], modpack[1:])
+        print "construct", mods
         self.construct_client_mods(mods)
         self.construct_client_coremods(coremods)
         self.construct_client_data()
