@@ -22,10 +22,10 @@ class InplaceList(object):
         if isinstance(other, str):
             for line in other.split('\n'):
                 if line and not line.isspace():
-                    self.list.append(os.path.join("mods", line.strip()))
+                    self.list.append(os.path.join("components", line.strip()))
         elif isinstance(other, (list, set, tuple)):
             for data in other:
-                self.list.append(os.path.join("mods", data))
+                self.list.append(os.path.join("components", data))
         else:
             self.list.append(other)
         return self
@@ -50,7 +50,7 @@ class InplaceList(object):
 class Modpack(object):
     """Modpack stores all types of data on how to construct the modpack."""
     def __init__(self, basemodpack, baseserver, output="build/"):
-        self.mods = "mods/"
+        self.mods = "components/"
         self.output = output
         self.modpack = InplaceList()
         self.server = InplaceList()
@@ -63,8 +63,8 @@ class Modpack(object):
         self.server_mods = InplaceList()
         self.server_coremods = InplaceList()
         self.server_data = InplaceList()
-        self.server.list += baseserver
-        self.modpack.list += basemodpack
+        self.server += baseserver
+        self.modpack += basemodpack
         self.launcher = "java -server -Xmx1024M -jar server.jar nogui"
 
     def check_files(self):
