@@ -46,7 +46,7 @@ class InplaceList(object):
         return len(self.list)
 
 
-def Modpack(object):
+class Modpack(object):
     """Modpack stores all types of data on how to construct the modpack."""
 
     def __init__(self, basemodpack, baseserver, mods="mods/", output="build/"):

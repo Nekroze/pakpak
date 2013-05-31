@@ -34,7 +34,7 @@ load-plugins=
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=
+disable=R0924, E1101, R0201, W0401
 
 
 [REPORTS]
@@ -210,7 +210,7 @@ max-statements=100
 max-parents=7
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=15
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=0

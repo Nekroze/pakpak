@@ -12,7 +12,7 @@ def ensure(directory):
         os.makedirs(directory)
 
 
-def CopyFilelistTo(filelist, destination):
+def copyfilelist(filelist, destination):
     """Copy all files in filelist to the destination directory."""
     ensure(destination)
     if not filelist:
@@ -20,7 +20,7 @@ def CopyFilelistTo(filelist, destination):
             shutil.copy2(single, destination)
 
 
-def CompressFilelistTo(base, filelist, destination):
+def compressfilelist(base, filelist, destination):
     """
     Copy the base to the destination and copy the contents of filelist into the
     destination.
@@ -35,7 +35,7 @@ def CompressFilelistTo(base, filelist, destination):
             basezip.extractall(".tmp/")
 
     with zipfile.open(destination, "w") as destzip:
-        for root, dirs, files in os.walk(".tmp/"):
+        for root, _, files in os.walk(".tmp/"):
             for single in files:
                 destzip.write(os.path.join(root, file))
     shutil.rmtree(".tmp/")
@@ -69,20 +69,20 @@ class Packer(object):
         Construct a modpack.jar with the given base and all additions added
         into the base.
         """
-        CompressFilelistTo(base, additions,
-                           os.path.join(self.output, "client/bin/modpack.jar"))
+        compressfilelist(base, additions,
+                         os.path.join(self.output, "client/bin/modpack.jar"))
 
     def construct_client_mods(self, modlist=None):
         """Construct the mods for the client modpack."""
-        CopyFilelistTo(modlist, os.path.join(self.output, "client/mods"))
+        copyfilelist(modlist, os.path.join(self.output, "client/mods"))
 
     def construct_client_coremods(self, modlist=None):
         """Construct the coremods for the client modspack."""
-        CopyFilelistTo(modlist, os.path.join(self.output, "client/coremods"))
+        copyfilelist(modlist, os.path.join(self.output, "client/coremods"))
 
     def construct_client_data(self):
         """Copy all client data over to the client output."""
-        CopyFilelistTo(self.clientdata, os.path.join(self.output, "client/"))
+        copyfilelist(self.clientdata, os.path.join(self.output, "client/"))
 
     def construct_server(self, server, mods, coremods, launcher):
         """Construct the client modpack."""
@@ -97,24 +97,24 @@ class Packer(object):
         Construct a server.jar with the given base and all additions added
         into the base.
         """
-        CompressFilelistTo(base, additions,
-                           os.path.join(self.output, "server/server.jar"))
+        compressfilelist(base, additions,
+                         os.path.join(self.output, "server/server.jar"))
 
     def construct_server_launcher(self, command):
         """Construct the server launcher scripts."""
-        with open(os.path.join(self.output, "server/start.bat") as bat:
-                  bat.write(command)
-        with open(os.path.join(self.output, "server/start.sh") as bash:
-                  bash.write(command)
+        with open(os.path.join(self.output, "server/start.bat")) as bat:
+            bat.write(command)
+        with open(os.path.join(self.output, "server/start.sh")) as bash:
+            bash.write(command)
 
     def construct_server_mods(self, modlist=None):
         """Construct the mods for the server modpack."""
-        CopyFilelistTo(modlist, os.path.join(self.output, "client/mods"))
+        copyfilelist(modlist, os.path.join(self.output, "client/mods"))
 
     def construct_server_coremods(self, modlist=None):
         """Construct the coremods for the server modspack."""
-        CopyFilelistTo(modlist, os.path.join(self.output, "client/mods"))
+        copyfilelist(modlist, os.path.join(self.output, "client/mods"))
 
     def construct_server_data(self):
         """Copy all server data over to the server output."""
-        CopyFilelistTo(self.clientdata, os.path.join(self.output, "server/"))
+        copyfilelist(self.clientdata, os.path.join(self.output, "server/"))
