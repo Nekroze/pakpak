@@ -62,7 +62,9 @@ class Packer(object):
 
     def construct_client(self, modpack, mods, coremods):
         """Construct the client modpack."""
-        shutil.rmtree(os.path.join(self.output, "client"))
+        path = os.path.join(self.output, "client")
+        if os.path.exists(path):
+            shutil.rmtree(path)
         self.construct_client_modpack(modpack[0], modpack[1:])
         self.construct_client_mods(mods)
         self.construct_client_coremods(coremods)
@@ -90,7 +92,9 @@ class Packer(object):
 
     def construct_server(self, server, mods, coremods, launcher):
         """Construct the client modpack."""
-        shutil.rmtree(os.path.join(self.output, "server"))
+        path = os.path.join(self.output, "server")
+        if os.path.exists(path):
+            shutil.rmtree(path)
         self.construct_server_server(server[0], server[1:])
         self.construct_server_launcher(launcher)
         self.construct_server_mods(mods)
