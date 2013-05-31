@@ -2,11 +2,15 @@
 __author__ = 'Taylor "Nekroze" Lawson'
 __email__ = 'nekroze@eturnilnetwork.com'
 import os
+import shutil
+import zipfile
 
 
 def CopyFilelistTo(filelist, destination):
     """Copy all files in filelist to the destination directory."""
-    pass
+    if not filelist:
+        for single in filelist:
+            shutil.copy2(single, destination)
 
 
 def CompressFilelistTo(base, filelist, destination):
@@ -14,7 +18,18 @@ def CompressFilelistTo(base, filelist, destination):
     Copy the base to the destination and copy the contents of filelist into the
     destination.
     """
-    pass
+    files = [base]
+    if filelist:
+        files.extend(filelist)
+    for single in files:
+        with zipfile.open(single, "r") as basezip:
+            basezip.extractall(".tmp/")
+
+    with zipfile.open(destination, "w") as destzip:
+        for root, dirs, files in os.walk(".tmp/"):
+            for single in files:
+                destzip.write(os.path.join(root, file))
+    shutil.rmtree(".tmp/")
 
 
 class Packer(object):
