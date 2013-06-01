@@ -11,6 +11,20 @@ def ensure(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+        
+def copydirectory(root_src_dir, root_dst_dir):
+    """Copy one directory to another location and overwrite."""
+    for src_dir, dirs, files in os.walk(root_src_dir):
+        dst_dir = src_dir.replace(root_src_dir, root_dst_dir)
+        if not os.path.exists(dst_dir):
+            os.mkdir(dst_dir)
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                os.remove(dst_file)
+            shutil.copy2(src_file, dst_dir)
+
 
 def copyfilelist(filelist, destination):
     """Copy all files in filelist to the destination directory."""
@@ -18,9 +32,9 @@ def copyfilelist(filelist, destination):
     if filelist:
         for single in filelist:
             if os.path.isdir(single):
-                shutil.copytree(single,
-                                os.path.join(destination,
-                                             single.split(os.sep)[-1]))
+                copydirectory(single,
+                              os.path.join(destination,
+                                           single.split(os.sep)[-1]))
             else:
                 shutil.copy2(single, destination)
 
