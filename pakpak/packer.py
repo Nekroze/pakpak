@@ -11,7 +11,7 @@ def ensure(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-        
+
 def copydirectory(root_src_dir, root_dst_dir):
     """Copy one directory to another location and overwrite."""
     for src_dir, dirs, files in os.walk(root_src_dir):
@@ -52,8 +52,9 @@ def compressfilelist(base, filelist, destination):
     for single in files:
         with zipfile.ZipFile(single, "r") as basezip:
             for member in basezip.namelist():
-                if member.endswith('/'):
-                    os.makedirs(member)
+                path = os.path.join(".tmp", member)
+                if member.endswith('/') and not os.path.exists(path):
+                    os.makedirs(path)
             basezip.extractall(".tmp/")
 
     with zipfile.ZipFile(destination, "w") as destzip:
