@@ -52,7 +52,7 @@ def compressfilelist(base, filelist, destination):
     for single in files:
         with zipfile.ZipFile(single, "r") as basezip:
             for member in basezip.namelist():
-                if member.endswith('/'):
+                if member.endswith('/') and not os.path.exists(member):
                     os.makedirs(member)
             basezip.extractall(".tmp/")
 
