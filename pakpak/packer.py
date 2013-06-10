@@ -30,7 +30,7 @@ def copyfilelist(filelist, destination):
     """Copy all files in filelist to the destination directory."""
     ensure(destination)
     if filelist:
-        for single in filelist:
+        for single in [path for path in filelist if path is not None]:
             if os.path.isdir(single):
                 copydirectory(single,
                               os.path.join(destination,
@@ -49,7 +49,7 @@ def compressfilelist(base, filelist, destination):
     files = [base]
     if filelist:
         files.extend(filelist)
-    for single in files:
+    for single in [path for path in filelist if path is not None]:
         with zipfile.ZipFile(single, "r") as basezip:
             for member in basezip.namelist():
                 path = os.path.join(".tmp", member)

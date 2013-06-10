@@ -67,6 +67,8 @@ class InplaceList(object):
             if path[0] == '@':
                 if os.path.exists(path[1:]):
                     self.list[index] = path[1:]
+                else:
+                    self.list[index] = None
             elif not os.path.exists(path):
                 missing = True
                 print("[ERROR]Missing file: {0}".format(path))
