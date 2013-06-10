@@ -17,16 +17,26 @@ class InplaceList(object):
     def __init__(self):
         """Initialize an empty list."""
         self.list = []
+        self.checked = False
 
     def __iadd__(self, other):
         """Allow inplace addition of elements."""
         if isinstance(other, str):
             for line in other.split('\n'):
+                line = line.strip()
                 if line and not line.isspace():
-                    self.list.append(os.path.join("components", line.strip()))
+                    if line[0] == '@':
+                        self.list.append(os.path.join("@components", line[1:]))
+                    else:
+                        self.list.append(os.path.join("components", line))
+
         elif isinstance(other, (list, set, tuple)):
-            for data in other:
-                self.list.append(os.path.join("components", data))
+            for line in other:
+                line = line.strip()
+                if line[0] == '@':
+                    self.list.append(os.path.join("@components", line[1:]))
+                else:
+                    self.list.append(os.path.join("components", line))
         else:
             self.list.append(other)
         return self
@@ -46,6 +56,26 @@ class InplaceList(object):
     def __len__(self):
         """Return the number of stored values."""
         return len(self.list)
+
+    def __call__(self):
+        """Verify each path in the list as existing files."""
+        if self.checked:
+            return self.list
+
+        missing = False
+        for index, path in enumerate(self.list):
+            if path[0] == '@':
+                if os.path.exists(path[1:]):
+                    self.list[index] = path[1:]
+            elif not os.path.exists(path):
+                missing = True
+                print("[ERROR]Missing file: {0}".format(path))
+
+        if missing:
+            exit(1)
+        else:
+            self.checked = True
+            return self.list
 
 
 class Modpack(object):
@@ -68,54 +98,28 @@ class Modpack(object):
         self.modpack += basemodpack
         self.launcher = "java -server -Xmx2G -jar server.jar nogui"
 
-    def check_files(self):
-        """Check if all specified files exist."""
-        files = copy(self.modpack.list)
-        files.extend(self.server.list)
-        files.extend(self.universal_mods.list)
-        files.extend(self.universal_coremods.list)
-        files.extend(self.universal_data.list)
-        files.extend(self.client_mods.list)
-        files.extend(self.client_coremods.list)
-        files.extend(self.client_data.list)
-        files.extend(self.server_mods.list)
-        files.extend(self.server_coremods.list)
-        files.extend(self.server_data.list)
-        missing = False
-        for single in enumerate(files):
-            if '@' in single:
-                path = single.remove('@')
-                if os.path.exists(path):
-                    files[index] = path
-            elif not os.path.exists(single):
-                missing = True
-                print("[ERROR]Missing file: {0}".format(single))
-        if missing:
-            exit(1)
-
     def construct(self, client=True, server=True):
         """Construct the modpack using a packer."""
-        self.check_files()
         pack = Packer(self.mods, self.output,
-                      self.client_data.list, self.server_data.list)
-        clientmods = self.client_mods.list
-        clientmods.extend(self.universal_mods.list)
-        clientcoremods = self.client_coremods.list
-        clientcoremods.extend(self.universal_coremods.list)
-        clientdata = self.client_data.list
-        clientdata.extend(self.universal_data.list)
-        servermods = self.server_mods.list
-        servermods.extend(self.universal_mods.list)
-        servercoremods = self.server_coremods.list
-        servercoremods.extend(self.universal_coremods.list)
-        serverdata = self.server_data.list
-        serverdata.extend(self.universal_data.list)
+                      self.client_data(), self.server_data())
+        clientmods = self.client_mods()
+        clientmods.extend(self.universal_mods())
+        clientcoremods = self.client_coremods()
+        clientcoremods.extend(self.universal_coremods())
+        clientdata = self.client_data()
+        clientdata.extend(self.universal_data())
+        servermods = self.server_mods()
+        servermods.extend(self.universal_mods())
+        servercoremods = self.server_coremods()
+        servercoremods.extend(self.universal_coremods())
+        serverdata = self.server_data()
+        serverdata.extend(self.universal_data())
 
         if client:
-            pack.construct_client(copy(self.modpack.list), copy(clientmods),
+            pack.construct_client(copy(self.modpack()), copy(clientmods),
                                   copy(clientcoremods), copy(clientdata))
 
         if server:
-            pack.construct_server(copy(self.server.list), copy(servermods),
+            pack.construct_server(copy(self.server()), copy(servermods),
                                   copy(servercoremods), copy(serverdata),
                                   self.launcher)
