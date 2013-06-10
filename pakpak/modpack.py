@@ -29,9 +29,9 @@ class InplaceList(object):
                 line = line.strip()
                 if line and not line.isspace():
                     if line[0] == '@':
-                        if not SKIPABLE:
-                            continue
-                        self.list.append(os.path.join("@components", line[1:]))
+                        if SKIPABLE:
+                            self.list.append(os.path.join("@components",
+                                                          line[1:]))
                     elif line[0] == '#':
                         pass
                     else:
@@ -41,7 +41,8 @@ class InplaceList(object):
             for line in other:
                 line = line.strip()
                 if line[0] == '@':
-                    self.list.append(os.path.join("@components", line[1:]))
+                    if SKIPABLE:
+                        self.list.append(os.path.join("@components", line[1:]))
                 if line[0] == '#':
                     pass
                 else:
