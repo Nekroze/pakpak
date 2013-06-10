@@ -82,8 +82,11 @@ class Modpack(object):
         files.extend(self.server_coremods.list)
         files.extend(self.server_data.list)
         missing = False
-        for single in files:
-            if not os.path.exists(single):
+        for index, single in enumerate(files):
+            if single[0] == "@":
+                if os.path.exists(single[0]):
+                    files[index] = single[1:]
+            elif not os.path.exists(single):
                 missing = True
                 print("[ERROR]Missing file: {0}".format(single))
         if missing:
