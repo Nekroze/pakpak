@@ -48,8 +48,8 @@ def compressfilelist(base, filelist, destination):
     ensure(".tmp/")
     files = [base]
     if filelist:
-        files.extend(filelist)
-    for single in [path for path in filelist if path is not None]:
+        files.extend([path for path in filelist if path is not None])
+    for single in files:
         with zipfile.ZipFile(single, "r") as basezip:
             for member in basezip.namelist():
                 path = os.path.join(".tmp", member)
