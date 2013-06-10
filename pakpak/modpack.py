@@ -72,7 +72,7 @@ class InplaceList(object):
                 if os.path.exists(path[1:]):
                     self.list[index] = path[1:]
                 else:
-                    print("[WARNING]Skipping file: {0}".format(path))
+                    print("[WARNING]Skipping file: {0}".format(path[1:]))
                     self.list[index] = None
             elif not os.path.exists(path):
                 missing = True
