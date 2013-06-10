@@ -8,6 +8,9 @@ import os
 from copy import copy
 
 
+SKIPABLE = True
+
+
 class InplaceList(object):
     """
     This is a simple wrapper around a list that allows it to only be added to
@@ -26,7 +29,9 @@ class InplaceList(object):
                 line = line.strip()
                 if line and not line.isspace():
                     if line[0] == '@':
-                        self.list.append(os.path.join("@components", line[1:]))
+                        self.list.append(os.path.join("@components" if SKIPABLE
+                                                      else "components",
+                                                      line[1:]))
                     elif line[0] == '#':
                         pass
                     else:
@@ -130,3 +135,6 @@ class Modpack(object):
             pack.construct_server(copy(self.server()), copy(servermods),
                                   copy(servercoremods), copy(serverdata),
                                   self.launcher)
+
+    def skipable(self, value):
+        SKIPABLE = value
