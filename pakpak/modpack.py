@@ -138,4 +138,5 @@ class Modpack(object):
                                   self.launcher)
 
     def skipable(self, value):
+        global SKIPABLE
         SKIPABLE = value
