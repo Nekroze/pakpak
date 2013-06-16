@@ -29,9 +29,8 @@ class InplaceList(object):
                 line = line.strip()
                 if line and not line.isspace():
                     if line[0] == '@':
-                        if SKIPABLE:
-                            self.list.append(os.path.join("@components",
-                                                          line[1:]))
+                        self.list.append(os.path.join("@components",
+                                                      line[1:]))
                     elif line[0] == '#':
                         pass
                     else:
@@ -41,8 +40,7 @@ class InplaceList(object):
             for line in other:
                 line = line.strip()
                 if line[0] == '@':
-                    if SKIPABLE:
-                        self.list.append(os.path.join("@components", line[1:]))
+                    self.list.append(os.path.join("@components", line[1:]))
                 if line[0] == '#':
                     pass
                 else:
@@ -75,7 +73,7 @@ class InplaceList(object):
         missing = False
         for index, path in enumerate(self.list):
             if path[0] == '@':
-                if os.path.exists(path[1:]):
+                if os.path.exists(path[1:]) and SKIPABLE:
                     self.list[index] = path[1:]
                 else:
                     print("[WARNING]Skipping file: {0}".format(path[1:]))
