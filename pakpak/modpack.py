@@ -133,9 +133,9 @@ class Modpack(object):
 
         if server:
             pack.construct_server(copy(self.server()),
-                                  copy(self.server_plugins()), copy(servermods),
-                                  copy(servercoremods), copy(serverdata),
-                                  self.launcher)
+                                  copy(self.server_plugins()),
+                                  copy(servermods), copy(servercoremods),
+                                  copy(serverdata), self.launcher)
 
     def skipable(self, value):
         global SKIPABLE
