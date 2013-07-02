@@ -113,13 +113,14 @@ class Packer(object):
         """Copy all client data over to the client output."""
         copyfilelist(data, os.path.join(self.output, "client/"))
 
-    def construct_server(self, server, mods, coremods, data, launcher):
+    def construct_server(self, server, plugins, mods, coremods, data, launcher):
         """Construct the client modpack."""
         path = os.path.join(self.output, "server")
         if os.path.exists(path):
             shutil.rmtree(path)
         self.construct_server_server(server[0], server[1:])
         self.construct_server_launcher(launcher)
+        self.construct_server_plugins(plugins)
         self.construct_server_mods(mods)
         self.construct_server_coremods(coremods)
         self.construct_server_data(data)
@@ -138,6 +139,10 @@ class Packer(object):
             bat.write(command)
         with open(os.path.join(self.output, "server/start.sh"), 'w') as bash:
             bash.write(command)
+
+    def construct_server_plugins(self, modlist=None):
+        """Construct the plugins for the server modpack."""
+        copyfilelist(modlist, os.path.join(self.output, "server/plugins"))
 
     def construct_server_mods(self, modlist=None):
         """Construct the mods for the server modpack."""

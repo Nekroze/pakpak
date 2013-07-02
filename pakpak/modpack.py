@@ -102,6 +102,7 @@ class Modpack(object):
         self.client_mods = InplaceList()
         self.client_coremods = InplaceList()
         self.client_data = InplaceList()
+        self.server_plugins = InplaceList()
         self.server_mods = InplaceList()
         self.server_coremods = InplaceList()
         self.server_data = InplaceList()
@@ -131,7 +132,8 @@ class Modpack(object):
                                   copy(clientcoremods), copy(clientdata))
 
         if server:
-            pack.construct_server(copy(self.server()), copy(servermods),
+            pack.construct_server(copy(self.server()),
+                                  copy(self.server_plugins), copy(servermods),
                                   copy(servercoremods), copy(serverdata),
                                   self.launcher)
 
