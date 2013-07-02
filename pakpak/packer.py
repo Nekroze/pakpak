@@ -113,7 +113,8 @@ class Packer(object):
         """Copy all client data over to the client output."""
         copyfilelist(data, os.path.join(self.output, "client/"))
 
-    def construct_server(self, server, plugins, mods, coremods, data, launcher):
+    def construct_server(self, server, plugins, mods, coremods, data,
+                         launcher):
         """Construct the client modpack."""
         path = os.path.join(self.output, "server")
         if os.path.exists(path):

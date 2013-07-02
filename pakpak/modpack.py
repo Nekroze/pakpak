@@ -133,7 +133,7 @@ class Modpack(object):
 
         if server:
             pack.construct_server(copy(self.server()),
-                                  copy(self.server_plugins), copy(servermods),
+                                  copy(self.server_plugins()), copy(servermods),
                                   copy(servercoremods), copy(serverdata),
                                   self.launcher)
 
